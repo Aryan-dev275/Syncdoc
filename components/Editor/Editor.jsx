@@ -1,5 +1,7 @@
 import { useState } from "react";
-import Block from "./Block";
+import Block from "../Block/Block";
+import "../Editor/editor.css";
+
 const Editor = () => {
   const [document, setDocument] = useState({
     id: "doc-1",
@@ -37,17 +39,43 @@ const Editor = () => {
       }),
     }));
   };
+
+  const handleAddBlock = () => {
+    const newBlock = {
+      id: crypto.randomUUID(),
+      type: "paragraph",
+      content: "",
+    };
+    setDocument((prevDocument) => ({
+      ...prevDocument,
+      blocks: [...prevDocument.blocks, newBlock],
+    }));
+  };
+
+  const handleDelBlock = (blockId) => {
+    setDocument((prevDocument) => ({
+      ...prevDocument,
+      blocks: prevDocument.blocks.filter((block) => block.id !== blockId),
+    }));
+  };
+
   return (
-    <div>
+    <div className="editor">
       <h1>{document.title}</h1>
 
-      {document.blocks.map((block) => {
-        return (
-          <div key={block?.id}>
-            <Block id={block.id} block={block} onChange={handleBlockChange} />
-          </div>
-        );
-      })}
+      {document.blocks.map((block) => (
+        <div className="block-wrapper" key={block.id}>
+          <Block
+            block={block}
+            onChange={handleBlockChange}
+            onDelete={handleDelBlock}
+          />
+        </div>
+      ))}
+
+      <button className="add-block-btn" onClick={handleAddBlock}>
+        + Add new block
+      </button>
     </div>
   );
 };

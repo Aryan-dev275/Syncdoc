@@ -1,0 +1,137 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #f7f7f8;
+  font-family: Arial, sans-serif;
+  color: #111827;
+}
+
+.editor {
+  width: 800px;
+  max-width: 90%;
+  margin: 60px auto;
+}
+
+.editor h1 {
+  font-size: 32px;
+  margin-bottom: 40px;
+  color: #111827;
+}
+
+/* Each block */
+
+.block-wrapper {
+  margin-bottom: 18px;
+}
+
+.block {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.block-content {
+  flex: 1;
+}
+
+/* Heading */
+
+.heading-input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 28px;
+  font-weight: 600;
+  padding: 8px 4px;
+}
+
+/* Paragraph */
+
+.paragraph-input {
+  width: 100%;
+  min-height: 90px;
+  resize: vertical;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+
+  background: white;
+  padding: 12px;
+
+  font-size: 16px;
+  line-height: 1.6;
+
+  outline: none;
+}
+
+/* Code */
+
+.code-input {
+  width: 100%;
+  min-height: 120px;
+  resize: vertical;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+
+  background: #f1f1f1;
+  padding: 14px;
+
+  font-family: monospace;
+  font-size: 14px;
+  line-height: 1.5;
+
+  outline: none;
+}
+
+/* Focus effect */
+
+.paragraph-input:focus,
+.code-input:focus {
+  border-color: #9ca3af;
+}
+
+/* Delete button */
+
+.delete-btn {
+  border: none;
+  background: transparent;
+  color: #6b7280;
+
+  padding: 8px 10px;
+  border-radius: 6px;
+
+  cursor: pointer;
+}
+
+.delete-btn:hover {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+/* Add block */
+
+.add-block-btn {
+  margin-top: 10px;
+
+  border: 1px dashed #d1d5db;
+  background: transparent;
+
+  padding: 10px 16px;
+  border-radius: 8px;
+
+  color: #6b7280;
+  cursor: pointer;
+
+  font-size: 14px;
+}
+
+.add-block-btn:hover {
+  background: white;
+  border-color: #9ca3af;
+  color: #111827;
+}
