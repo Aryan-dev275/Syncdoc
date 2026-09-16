@@ -1,1 +1,2401 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        SyncDoc - Collaborative Editor
+    </title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+
+            margin: 0;
+
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+
+            background: #f5f7fb;
+
+            color: #1f2937;
+        }
+
+        /* ============================= */
+        /* HEADER */
+        /* ============================= */
+
+        .header {
+
+            background: #111827;
+
+            color: white;
+
+            padding: 18px 30px;
+
+            display: flex;
+
+            justify-content:
+                space-between;
+
+            align-items: center;
+        }
+
+        .logo {
+
+            font-size: 24px;
+
+            font-weight: 700;
+        }
+
+        .status {
+
+            font-size: 14px;
+
+            padding: 7px 12px;
+
+            border-radius: 20px;
+
+            background:
+                rgba(255,255,255,0.1);
+        }
+
+        /* ============================= */
+        /* CONNECTION STATUS */
+        /* ============================= */
+
+        .connection-status {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 7px;
+
+            margin-top: 10px;
+
+            padding: 7px 12px;
+
+            border-radius: 20px;
+
+            background: #ecfdf5;
+
+            color: #166534;
+
+            font-size: 13px;
+
+            font-weight: 600;
+        }
+
+        .connection-status.disconnected {
+
+            background: #fef2f2;
+
+            color: #991b1b;
+        }
+
+        .connection-status.reconnecting {
+
+            background: #fffbeb;
+
+            color: #92400e;
+        }
+
+        /* ============================= */
+        /* CONTAINER */
+        /* ============================= */
+
+        .container {
+
+            max-width: 1200px;
+
+            margin: 30px auto;
+
+            padding: 0 20px;
+        }
+
+        /* ============================= */
+        /* CARD */
+        /* ============================= */
+
+        .card {
+
+            background: white;
+
+            border-radius: 14px;
+
+            padding: 22px;
+
+            box-shadow:
+                0 5px 20px
+                rgba(0, 0, 0, 0.08);
+        }
+
+        /* ============================= */
+        /* JOIN */
+        /* ============================= */
+
+        .join {
+
+            margin-bottom: 20px;
+        }
+
+        input {
+
+            padding: 11px;
+
+            border:
+                1px solid #d1d5db;
+
+            border-radius: 8px;
+
+            font-size: 14px;
+        }
+
+        button {
+
+            padding: 11px 17px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            background: #2563eb;
+
+            color: white;
+
+            font-weight: 600;
+
+            cursor: pointer;
+        }
+
+        button:hover {
+
+            background: #1d4ed8;
+        }
+
+        button:disabled {
+
+            background: #9ca3af;
+
+            cursor: not-allowed;
+        }
+
+        /* ============================= */
+        /* LAYOUT */
+        /* ============================= */
+
+        .grid {
+
+            display: grid;
+
+            grid-template-columns:
+                1fr 310px;
+
+            gap: 20px;
+        }
+
+        /* ============================= */
+        /* BLOCK */
+        /* ============================= */
+
+        .block {
+
+            border:
+                2px solid #e5e7eb;
+
+            border-radius: 12px;
+
+            margin-bottom: 18px;
+
+            overflow: hidden;
+
+            transition: 0.2s;
+        }
+
+        .block.active {
+
+            border-color:
+                #2563eb;
+        }
+
+        .block.locked {
+
+            border-color:
+                #ef4444;
+        }
+
+        .block-header {
+
+            padding: 10px 14px;
+
+            background: #f9fafb;
+
+            display: flex;
+
+            justify-content:
+                space-between;
+
+            align-items: center;
+
+            font-size: 13px;
+
+            font-weight: 700;
+        }
+
+        .block-status {
+
+            font-size: 12px;
+        }
+
+        .block textarea {
+
+            width: 100%;
+
+            min-height: 130px;
+
+            border: none;
+
+            outline: none;
+
+            resize: vertical;
+
+            padding: 15px;
+
+            font-family:
+                "SFMono-Regular",
+                Consolas,
+                monospace;
+
+            font-size: 14px;
+
+            line-height: 1.6;
+        }
+
+        .block textarea:disabled {
+
+            background: #fef2f2;
+
+            cursor: not-allowed;
+        }
+
+        /* ============================= */
+        /* COLLABORATORS */
+        /* ============================= */
+
+        .user {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 9px;
+
+            padding: 10px;
+
+            margin-bottom: 8px;
+
+            background: #f9fafb;
+
+            border-radius: 9px;
+        }
+
+        .avatar {
+
+            width: 34px;
+
+            height: 34px;
+
+            border-radius: 50%;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            color: white;
+
+            font-weight: 700;
+        }
+
+        .dot {
+
+            width: 8px;
+
+            height: 8px;
+
+            border-radius: 50%;
+
+            background: #22c55e;
+        }
+
+        /* ============================= */
+        /* BLOCK PRESENCE */
+        /* ============================= */
+
+        .presence {
+
+            padding: 12px;
+
+            margin-bottom: 9px;
+
+            border-radius: 9px;
+
+            background: #f9fafb;
+        }
+
+        .presence-name {
+
+            font-weight: 700;
+        }
+
+        .presence-block {
+
+            font-size: 12px;
+
+            color: #6b7280;
+
+            margin-top: 4px;
+        }
+
+        /* ============================= */
+        /* CURSOR */
+        /* ============================= */
+
+        .cursor {
+
+            padding: 10px;
+
+            border-left:
+                4px solid #2563eb;
+
+            background: #f9fafb;
+
+            margin-bottom: 8px;
+
+            border-radius: 7px;
+        }
+
+        .cursor-name {
+
+            font-weight: 700;
+        }
+
+        .cursor-info {
+
+            font-size: 12px;
+
+            color: #6b7280;
+        }
+
+        /* ============================= */
+        /* MESSAGE */
+        /* ============================= */
+
+        .message-box {
+
+            display: flex;
+
+            gap: 10px;
+        }
+
+        .message-box input {
+
+            flex: 1;
+        }
+
+        /* ============================= */
+        /* SYNC INFO */
+        /* ============================= */
+
+        .sync-info {
+
+            margin-top: 10px;
+
+            padding: 10px;
+
+            background: #f9fafb;
+
+            border-radius: 8px;
+
+            font-size: 12px;
+
+            color: #6b7280;
+        }
+
+        /* ============================= */
+        /* RESPONSIVE */
+        /* ============================= */
+
+        @media (max-width: 800px) {
+
+            .grid {
+
+                grid-template-columns:
+                    1fr;
+            }
+
+            .header {
+
+                padding: 15px 20px;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <!-- ================================= -->
+    <!-- HEADER -->
+    <!-- ================================= -->
+
+    <header class="header">
+
+        <div class="logo">
+            SyncDoc
+        </div>
+
+        <div
+            class="status"
+            id="headerStatus"
+        >
+            🟢 Realtime Collaboration
+        </div>
+
+    </header>
+
+
+    <main class="container">
+
+        <!-- ================================= -->
+        <!-- JOIN -->
+        <!-- ================================= -->
+
+        <div class="card join">
+
+            <h2>
+                Collaborative Document
+            </h2>
+
+            <p>
+                Real-time structural editing
+                powered by Yjs and Socket.io.
+            </p>
+
+            <input
+                id="usernameInput"
+                placeholder="Enter your name"
+            >
+
+            <button
+                id="joinButton"
+            >
+                Join Document
+            </button>
+
+            <div
+                id="connectionStatus"
+                class="connection-status"
+            >
+                🟢 Connected to server
+            </div>
+
+            <div
+                id="syncInfo"
+                class="sync-info"
+            >
+                Waiting to join a document...
+            </div>
+
+        </div>
+
+
+        <!-- ================================= -->
+        <!-- MAIN GRID -->
+        <!-- ================================= -->
+
+        <div class="grid">
+
+            <!-- ================================= -->
+            <!-- EDITOR -->
+            <!-- ================================= -->
+
+            <section class="card">
+
+                <h2>
+                    📝 Shared Document
+                </h2>
+
+
+                <!-- BLOCK 1 -->
+
+                <div
+                    class="block"
+                    id="block-block-1"
+                >
+
+                    <div
+                        class="block-header"
+                    >
+
+                        <span>
+                            BLOCK 1 — Heading
+                        </span>
+
+                        <span
+                            class="block-status"
+                            id="status-block-1"
+                        >
+                            🔓 Available
+                        </span>
+
+                    </div>
+
+                    <textarea
+                        id="editor-block-1"
+                        placeholder="Write a heading..."
+                    ></textarea>
+
+                </div>
+
+
+                <!-- BLOCK 2 -->
+
+                <div
+                    class="block"
+                    id="block-block-2"
+                >
+
+                    <div
+                        class="block-header"
+                    >
+
+                        <span>
+                            BLOCK 2 — Paragraph
+                        </span>
+
+                        <span
+                            class="block-status"
+                            id="status-block-2"
+                        >
+                            🔓 Available
+                        </span>
+
+                    </div>
+
+                    <textarea
+                        id="editor-block-2"
+                        placeholder="Write a paragraph..."
+                    ></textarea>
+
+                </div>
+
+
+                <!-- BLOCK 3 -->
+
+                <div
+                    class="block"
+                    id="block-block-3"
+                >
+
+                    <div
+                        class="block-header"
+                    >
+
+                        <span>
+                            BLOCK 3 — Code
+                        </span>
+
+                        <span
+                            class="block-status"
+                            id="status-block-3"
+                        >
+                            🔓 Available
+                        </span>
+
+                    </div>
+
+                    <textarea
+                        id="editor-block-3"
+                        placeholder="Write code..."
+                    ></textarea>
+
+                </div>
+
+
+                <h3>
+                    Current Document
+                </h3>
+
+                <pre
+                    id="documentPreview"
+                ></pre>
+
+            </section>
+
+
+            <!-- ================================= -->
+            <!-- SIDEBAR -->
+            <!-- ================================= -->
+
+            <aside class="card">
+
+                <h2>
+                    👥 Collaborators
+                </h2>
+
+                <h3 id="usersOnline">
+                    🟢 0 users online
+                </h3>
+
+                <div id="userList">
+                </div>
+
+                <hr>
+
+                <h3>
+                    🔒 Active Blocks
+                </h3>
+
+                <div id="blockPresence">
+
+                    <p>
+                        No blocks locked.
+                    </p>
+
+                </div>
+
+                <hr>
+
+                <h3>
+                    🎯 Live Cursors
+                </h3>
+
+                <div id="cursorList">
+
+                    <p>
+                        No remote cursors.
+                    </p>
+
+                </div>
+
+            </aside>
+
+        </div>
+
+
+        <!-- ================================= -->
+        <!-- MESSAGES -->
+        <!-- ================================= -->
+
+        <div
+            class="card"
+            style="margin-top:20px;"
+        >
+
+            <h2>
+                💬 Collaboration
+            </h2>
+
+            <div
+                class="message-box"
+            >
+
+                <input
+                    id="messageInput"
+                    placeholder="Send a message..."
+                >
+
+                <button
+                    id="sendButton"
+                >
+                    Send
+                </button>
+
+            </div>
+
+            <ul
+                id="messages"
+            >
+            </ul>
+
+        </div>
+
+    </main>
+
+
+    <!-- ================================= -->
+    <!-- SOCKET.IO -->
+    <!-- ================================= -->
+
+    <script
+        src="/socket.io/socket.io.js"
+    ></script>
+
+
+    <!-- ================================= -->
+    <!-- YJS -->
+    <!-- ================================= -->
+
+    <script type="module">
+
+        import * as Y
+            from "https://cdn.jsdelivr.net/npm/yjs/+esm";
+
+
+        // =================================
+        // SOCKET.IO
+        // =================================
+
+        const socket = io({
+
+            reconnection: true,
+
+            reconnectionAttempts: Infinity,
+
+            reconnectionDelay: 1000,
+
+            reconnectionDelayMax: 5000
+
+        });
+
+
+        // =================================
+        // DOCUMENT
+        // =================================
+
+        const documentId =
+            "document-1";
+
+
+        // =================================
+        // USER
+        // =================================
+
+        let username = "";
+
+
+        let hasJoinedDocument =
+            false;
+
+
+        // =================================
+        // YJS DOCUMENT
+        // =================================
+
+        const ydoc =
+            new Y.Doc();
+
+
+        // =================================
+        // BLOCKS
+        // =================================
+
+        const blockIds = [
+
+            "block-1",
+
+            "block-2",
+
+            "block-3"
+
+        ];
+
+
+        const ytexts = {};
+
+
+        blockIds.forEach(
+            (blockId) => {
+
+                ytexts[blockId] =
+                    ydoc.getText(
+                        blockId
+                    );
+
+            }
+        );
+
+
+        // =================================
+        // HTML ELEMENTS
+        // =================================
+
+        const usernameInput =
+            document.getElementById(
+                "usernameInput"
+            );
+
+
+        const joinButton =
+            document.getElementById(
+                "joinButton"
+            );
+
+
+        const usersOnline =
+            document.getElementById(
+                "usersOnline"
+            );
+
+
+        const userList =
+            document.getElementById(
+                "userList"
+            );
+
+
+        const blockPresence =
+            document.getElementById(
+                "blockPresence"
+            );
+
+
+        const cursorList =
+            document.getElementById(
+                "cursorList"
+            );
+
+
+        const documentPreview =
+            document.getElementById(
+                "documentPreview"
+            );
+
+
+        const messageInput =
+            document.getElementById(
+                "messageInput"
+            );
+
+
+        const sendButton =
+            document.getElementById(
+                "sendButton"
+            );
+
+
+        const messages =
+            document.getElementById(
+                "messages"
+            );
+
+
+        const connectionStatus =
+            document.getElementById(
+                "connectionStatus"
+            );
+
+
+        const syncInfo =
+            document.getElementById(
+                "syncInfo"
+            );
+
+
+        const headerStatus =
+            document.getElementById(
+                "headerStatus"
+            );
+
+
+        // =================================
+        // LOCKS
+        // =================================
+
+        const myLocks =
+            new Set();
+
+
+        const activeLocks =
+            new Map();
+
+
+        const remoteCursors =
+            new Map();
+
+
+        // =================================
+        // GET EDITOR
+        // =================================
+
+        function getEditor(blockId) {
+
+            return document.getElementById(
+                `editor-${blockId}`
+            );
+
+        }
+
+
+        // =================================
+        // GET BLOCK
+        // =================================
+
+        function getBlock(blockId) {
+
+            return document.getElementById(
+                `block-${blockId}`
+            );
+
+        }
+
+
+        // =================================
+        // GET STATUS
+        // =================================
+
+        function getStatus(blockId) {
+
+            return document.getElementById(
+                `status-${blockId}`
+            );
+
+        }
+
+
+        // =================================
+        // CONNECTION STATUS
+        // =================================
+
+        function setConnectionStatus(
+            type,
+            message
+        ) {
+
+            connectionStatus.textContent =
+                message;
+
+
+            connectionStatus.classList.remove(
+                "disconnected",
+                "reconnecting"
+            );
+
+
+            if (
+                type ===
+                "disconnected"
+            ) {
+
+                connectionStatus.classList.add(
+                    "disconnected"
+                );
+
+            }
+
+
+            if (
+                type ===
+                "reconnecting"
+            ) {
+
+                connectionStatus.classList.add(
+                    "reconnecting"
+                );
+
+            }
+
+        }
+
+
+        // =================================
+        // SOCKET CONNECT
+        // =================================
+
+        socket.on(
+            "connect",
+            () => {
+
+                console.log(
+                    "🟢 Connected:",
+                    socket.id
+                );
+
+
+                setConnectionStatus(
+                    "connected",
+                    "🟢 Connected to server"
+                );
+
+
+                headerStatus.textContent =
+                    "🟢 Realtime Collaboration";
+
+
+                if (
+                    hasJoinedDocument
+                ) {
+
+                    syncInfo.textContent =
+                        "🔄 Rejoining and synchronizing...";
+
+
+                    socket.emit(
+                        "join-document",
+                        {
+
+                            documentId:
+                                documentId,
+
+                            username:
+                                username
+
+                        }
+                    );
+
+                }
+
+            }
+        );
+
+
+        // =================================
+        // SOCKET DISCONNECT
+        // =================================
+
+        socket.on(
+            "disconnect",
+            (reason) => {
+
+                console.log(
+                    "🔴 Disconnected:",
+                    reason
+                );
+
+
+                setConnectionStatus(
+                    "disconnected",
+                    "🔴 Connection lost"
+                );
+
+
+                headerStatus.textContent =
+                    "🔴 Connection Lost";
+
+
+                syncInfo.textContent =
+                    "Connection lost. Waiting for reconnection...";
+
+            }
+        );
+
+
+        // =================================
+        // RECONNECT ATTEMPT
+        // =================================
+
+        socket.io.on(
+            "reconnect_attempt",
+            (attempt) => {
+
+                console.log(
+                    `🔄 Reconnection attempt ${attempt}`
+                );
+
+
+                setConnectionStatus(
+                    "reconnecting",
+                    "🔄 Reconnecting..."
+                );
+
+
+                headerStatus.textContent =
+                    "🔄 Reconnecting";
+
+
+                syncInfo.textContent =
+                    `Trying to reconnect... Attempt ${attempt}`;
+
+            }
+        );
+
+
+        // =================================
+        // RECONNECT SUCCESS
+        // =================================
+
+        socket.io.on(
+            "reconnect",
+            (attempt) => {
+
+                console.log(
+                    `✅ Reconnected after ${attempt} attempt(s)`
+                );
+
+
+                setConnectionStatus(
+                    "connected",
+                    "🟢 Reconnected"
+                );
+
+
+                headerStatus.textContent =
+                    "🟢 Realtime Collaboration";
+
+
+                syncInfo.textContent =
+                    "🔄 Checking for missing updates...";
+
+
+                if (
+                    hasJoinedDocument
+                ) {
+
+                    requestMissingUpdates();
+
+                }
+
+            }
+        );
+
+
+        // =================================
+        // RECONNECT ERROR
+        // =================================
+
+        socket.io.on(
+            "reconnect_error",
+            (error) => {
+
+                console.log(
+                    "❌ Reconnection error:",
+                    error.message
+                );
+
+            }
+        );
+
+
+        // =================================
+        // JOIN DOCUMENT
+        // =================================
+
+        joinButton.addEventListener(
+            "click",
+            () => {
+
+                username =
+                    usernameInput.value.trim();
+
+
+                if (!username) {
+
+                    alert(
+                        "Please enter your name."
+                    );
+
+                    return;
+
+                }
+
+
+                hasJoinedDocument =
+                    true;
+
+
+                socket.emit(
+                    "join-document",
+                    {
+
+                        documentId:
+                            documentId,
+
+                        username:
+                            username
+
+                    }
+                );
+
+
+                usernameInput.disabled =
+                    true;
+
+
+                joinButton.disabled =
+                    true;
+
+
+                syncInfo.textContent =
+                    "Joining document...";
+
+            }
+        );
+
+
+        // =================================
+        // INITIAL SERVER SYNC
+        // =================================
+
+        socket.on(
+            "yjs-sync",
+            (update) => {
+
+                const updateArray =
+                    new Uint8Array(
+                        update
+                    );
+
+
+                Y.applyUpdate(
+                    ydoc,
+                    updateArray,
+                    "server-sync"
+                );
+
+
+                renderAllBlocks();
+
+
+                syncInfo.textContent =
+                    "✅ Document synchronized.";
+
+            }
+        );
+
+
+        // =================================
+        // STATE VECTOR SYNC
+        // =================================
+
+        function requestMissingUpdates() {
+
+            if (
+                !socket.connected ||
+                !hasJoinedDocument
+            ) {
+
+                return;
+
+            }
+
+
+            const stateVector =
+                Y.encodeStateVector(
+                    ydoc
+                );
+
+
+            socket.emit(
+                "request-yjs-sync",
+                {
+
+                    documentId:
+                        documentId,
+
+                    stateVector:
+                        Array.from(
+                            stateVector
+                        )
+
+                }
+            );
+
+        }
+
+
+        // =================================
+        // RECEIVE MISSING UPDATES
+        // =================================
+
+        socket.on(
+            "yjs-sync-update",
+            (update) => {
+
+                const updateArray =
+                    new Uint8Array(
+                        update
+                    );
+
+
+                Y.applyUpdate(
+                    ydoc,
+                    updateArray,
+                    "server-sync"
+                );
+
+
+                renderAllBlocks();
+
+
+                syncInfo.textContent =
+                    "✅ Synchronization complete.";
+
+            }
+        );
+
+
+        // =================================
+        // RECEIVE REMOTE UPDATE
+        // =================================
+
+        socket.on(
+            "yjs-update",
+            (update) => {
+
+                const updateArray =
+                    new Uint8Array(
+                        update
+                    );
+
+
+                Y.applyUpdate(
+                    ydoc,
+                    updateArray,
+                    "remote"
+                );
+
+
+                renderAllBlocks();
+
+            }
+        );
+
+
+        // =================================
+        // LOCAL YJS UPDATE
+        // =================================
+
+        ydoc.on(
+            "update",
+            (update, origin) => {
+
+                if (
+                    origin ===
+                        "remote" ||
+                    origin ===
+                        "server-sync"
+                ) {
+
+                    return;
+
+                }
+
+
+                if (
+                    !socket.connected
+                ) {
+
+                    console.log(
+                        "⚠️ Offline Yjs update created."
+                    );
+
+                    return;
+
+                }
+
+
+                socket.emit(
+                    "yjs-update",
+                    {
+
+                        documentId:
+                            documentId,
+
+                        update:
+                            Array.from(
+                                update
+                            )
+
+                    }
+                );
+
+
+                renderDocument();
+
+            }
+        );
+
+
+        // =================================
+        // RENDER BLOCKS
+        // =================================
+
+        function renderAllBlocks() {
+
+            blockIds.forEach(
+                (blockId) => {
+
+                    const editor =
+                        getEditor(
+                            blockId
+                        );
+
+
+                    if (
+                        document.activeElement !==
+                        editor
+                    ) {
+
+                        editor.value =
+                            ytexts[
+                                blockId
+                            ].toString();
+
+                    }
+
+                }
+            );
+
+
+            renderDocument();
+
+        }
+
+
+        // =================================
+        // RENDER DOCUMENT
+        // =================================
+
+        function renderDocument() {
+
+            const content =
+                blockIds.map(
+                    (blockId) => {
+
+                        return (
+                            `[${blockId}]\n` +
+                            ytexts[
+                                blockId
+                            ].toString()
+                        );
+
+                    }
+                ).join(
+                    "\n\n"
+                );
+
+
+            documentPreview.textContent =
+                content;
+
+        }
+
+
+        // =================================
+        // BLOCK EVENTS
+        // =================================
+
+        blockIds.forEach(
+            (blockId) => {
+
+                const editor =
+                    getEditor(
+                        blockId
+                    );
+
+
+                // -------------------------
+                // FOCUS
+                // -------------------------
+
+                editor.addEventListener(
+                    "focus",
+                    () => {
+
+                        if (
+                            !hasJoinedDocument ||
+                            !socket.connected
+                        ) {
+
+                            return;
+
+                        }
+
+
+                        socket.emit(
+                            "request-block-lock",
+                            {
+
+                                documentId:
+                                    documentId,
+
+                                blockId:
+                                    blockId
+
+                            }
+                        );
+
+                    }
+                );
+
+
+                // -------------------------
+                // BLUR
+                // -------------------------
+
+                editor.addEventListener(
+                    "blur",
+                    () => {
+
+                        if (
+                            myLocks.has(
+                                blockId
+                            )
+                        ) {
+
+                            socket.emit(
+                                "release-block-lock",
+                                {
+
+                                    documentId:
+                                        documentId,
+
+                                    blockId:
+                                        blockId
+
+                                }
+                            );
+
+                        }
+
+                    }
+                );
+
+
+                // -------------------------
+                // INPUT
+                // -------------------------
+
+                editor.addEventListener(
+                    "input",
+                    () => {
+
+                        if (
+                            !myLocks.has(
+                                blockId
+                            )
+                        ) {
+
+                            return;
+
+                        }
+
+
+                        const ytext =
+                            ytexts[
+                                blockId
+                            ];
+
+
+                        const oldText =
+                            ytext.toString();
+
+
+                        const newText =
+                            editor.value;
+
+
+                        let start =
+                            0;
+
+
+                        while (
+                            start <
+                                oldText.length &&
+                            start <
+                                newText.length &&
+                            oldText[start] ===
+                                newText[start]
+                        ) {
+
+                            start++;
+
+                        }
+
+
+                        let oldEnd =
+                            oldText.length;
+
+
+                        let newEnd =
+                            newText.length;
+
+
+                        while (
+                            oldEnd > start &&
+                            newEnd > start &&
+                            oldText[
+                                oldEnd - 1
+                            ] ===
+                                newText[
+                                    newEnd - 1
+                                ]
+                        ) {
+
+                            oldEnd--;
+
+                            newEnd--;
+
+                        }
+
+
+                        const deleteCount =
+                            oldEnd -
+                            start;
+
+
+                        const insertedText =
+                            newText.slice(
+                                start,
+                                newEnd
+                            );
+
+
+                        if (
+                            deleteCount > 0
+                        ) {
+
+                            ytext.delete(
+                                start,
+                                deleteCount
+                            );
+
+                        }
+
+
+                        if (
+                            insertedText.length >
+                            0
+                        ) {
+
+                            ytext.insert(
+                                start,
+                                insertedText
+                            );
+
+                        }
+
+
+                        sendCursor(
+                            blockId
+                        );
+
+                    }
+                );
+
+
+                // -------------------------
+                // CURSOR EVENTS
+                // -------------------------
+
+                editor.addEventListener(
+                    "keyup",
+                    () => {
+
+                        sendCursor(
+                            blockId
+                        );
+
+                    }
+                );
+
+
+                editor.addEventListener(
+                    "click",
+                    () => {
+
+                        sendCursor(
+                            blockId
+                        );
+
+                    }
+                );
+
+
+                editor.addEventListener(
+                    "select",
+                    () => {
+
+                        sendCursor(
+                            blockId
+                        );
+
+                    }
+                );
+
+
+                editor.addEventListener(
+                    "mouseup",
+                    () => {
+
+                        sendCursor(
+                            blockId
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+
+        // =================================
+        // SEND CURSOR
+        // =================================
+
+        function sendCursor(blockId) {
+
+            if (
+                !username ||
+                !socket.connected
+            ) {
+
+                return;
+
+            }
+
+
+            const editor =
+                getEditor(
+                    blockId
+                );
+
+
+            socket.emit(
+                "cursor-update",
+                {
+
+                    documentId:
+                        documentId,
+
+                    username:
+                        username,
+
+                    position:
+                        editor.selectionStart,
+
+                    selectionEnd:
+                        editor.selectionEnd,
+
+                    blockId:
+                        blockId
+
+                }
+            );
+
+        }
+
+
+        // =================================
+        // RECEIVE CURSOR
+        // =================================
+
+        socket.on(
+            "cursor-update",
+            (data) => {
+
+                remoteCursors.set(
+                    data.userId,
+                    data
+                );
+
+
+                renderCursors();
+
+            }
+        );
+
+
+        // =================================
+        // RENDER CURSORS
+        // =================================
+
+        function renderCursors() {
+
+            cursorList.innerHTML =
+                "";
+
+
+            if (
+                remoteCursors.size === 0
+            ) {
+
+                cursorList.innerHTML =
+                    "<p>No remote cursors.</p>";
+
+                return;
+
+            }
+
+
+            remoteCursors.forEach(
+                (cursor) => {
+
+                    const div =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    div.className =
+                        "cursor";
+
+
+                    div.style.borderColor =
+                        getUserColor(
+                            cursor.userId
+                        );
+
+
+                    const blockNumber =
+                        cursor.blockId
+                            .replace(
+                                "block-",
+                                ""
+                            );
+
+
+                    div.innerHTML =
+                        `
+                        <div class="cursor-name">
+                            ● ${escapeHtml(cursor.username)}
+                        </div>
+
+                        <div class="cursor-info">
+                            Block ${blockNumber}
+                            · Position ${cursor.position}
+                        </div>
+                        `;
+
+
+                    cursorList.appendChild(
+                        div
+                    );
+
+                }
+            );
+
+        }
+
+
+        // =================================
+        // LOCK GRANTED
+        // =================================
+
+        socket.on(
+            "block-lock-granted",
+            ({ blockId }) => {
+
+                myLocks.add(
+                    blockId
+                );
+
+
+                const editor =
+                    getEditor(
+                        blockId
+                    );
+
+
+                editor.disabled =
+                    false;
+
+
+                getBlock(
+                    blockId
+                ).classList.add(
+                    "active"
+                );
+
+
+                getStatus(
+                    blockId
+                ).textContent =
+                    "🔒 You are editing";
+
+
+                renderBlockPresence();
+
+            }
+        );
+
+
+        // =================================
+        // LOCK DENIED
+        // =================================
+
+        socket.on(
+            "block-lock-denied",
+            ({
+                blockId,
+                username: owner
+            }) => {
+
+                const editor =
+                    getEditor(
+                        blockId
+                    );
+
+
+                editor.disabled =
+                    true;
+
+
+                getBlock(
+                    blockId
+                ).classList.add(
+                    "locked"
+                );
+
+
+                getStatus(
+                    blockId
+                ).textContent =
+                    `🔒 ${owner} is editing`;
+
+
+                alert(
+                    `${owner} is currently editing this block.`
+                );
+
+            }
+        );
+
+
+        // =================================
+        // BLOCK LOCKS
+        // =================================
+
+        socket.on(
+            "block-locks",
+            (locks) => {
+
+                activeLocks.clear();
+
+
+                locks.forEach(
+                    (lock) => {
+
+                        activeLocks.set(
+                            lock.blockId,
+                            lock
+                        );
+
+                    }
+                );
+
+
+                updateBlockUI();
+
+                renderBlockPresence();
+
+            }
+        );
+
+
+        // =================================
+        // UPDATE BLOCK UI
+        // =================================
+
+        function updateBlockUI() {
+
+            blockIds.forEach(
+                (blockId) => {
+
+                    const block =
+                        getBlock(
+                            blockId
+                        );
+
+
+                    const editor =
+                        getEditor(
+                            blockId
+                        );
+
+
+                    const status =
+                        getStatus(
+                            blockId
+                        );
+
+
+                    const lock =
+                        activeLocks.get(
+                            blockId
+                        );
+
+
+                    block.classList.remove(
+                        "locked"
+                    );
+
+
+                    block.classList.remove(
+                        "active"
+                    );
+
+
+                    if (!lock) {
+
+                        editor.disabled =
+                            false;
+
+
+                        status.textContent =
+                            "🔓 Available";
+
+
+                        return;
+
+                    }
+
+
+                    if (
+                        lock.userId ===
+                        socket.id
+                    ) {
+
+                        editor.disabled =
+                            false;
+
+
+                        block.classList.add(
+                            "active"
+                        );
+
+
+                        status.textContent =
+                            "🔒 You are editing";
+
+                    } else {
+
+                        editor.disabled =
+                            true;
+
+
+                        block.classList.add(
+                            "locked"
+                        );
+
+
+                        status.textContent =
+                            `🔒 ${lock.username} is editing`;
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        // =================================
+        // BLOCK PRESENCE
+        // =================================
+
+        function renderBlockPresence() {
+
+            blockPresence.innerHTML =
+                "";
+
+
+            if (
+                activeLocks.size === 0
+            ) {
+
+                blockPresence.innerHTML =
+                    "<p>No blocks locked.</p>";
+
+                return;
+
+            }
+
+
+            activeLocks.forEach(
+                (lock) => {
+
+                    const div =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    div.className =
+                        "presence";
+
+
+                    div.innerHTML =
+                        `
+                        <div class="presence-name">
+                            🔒 ${escapeHtml(lock.username)}
+                        </div>
+
+                        <div class="presence-block">
+                            Editing ${lock.blockId}
+                        </div>
+                        `;
+
+
+                    blockPresence.appendChild(
+                        div
+                    );
+
+                }
+            );
+
+        }
+
+
+        // =================================
+        // USERS ONLINE
+        // =================================
+
+        socket.on(
+            "users-online",
+            (users) => {
+
+                usersOnline.textContent =
+                    `🟢 ${users.length} users online`;
+
+
+                userList.innerHTML =
+                    "";
+
+
+                users.forEach(
+                    (user) => {
+
+                        const div =
+                            document.createElement(
+                                "div"
+                            );
+
+
+                        div.className =
+                            "user";
+
+
+                        const avatar =
+                            document.createElement(
+                                "div"
+                            );
+
+
+                        avatar.className =
+                            "avatar";
+
+
+                        avatar.style.background =
+                            getUserColor(
+                                user.id
+                            );
+
+
+                        avatar.textContent =
+                            user.username
+                                .charAt(0)
+                                .toUpperCase();
+
+
+                        const dot =
+                            document.createElement(
+                                "div"
+                            );
+
+
+                        dot.className =
+                            "dot";
+
+
+                        const name =
+                            document.createElement(
+                                "span"
+                            );
+
+
+                        name.textContent =
+                            user.username;
+
+
+                        div.appendChild(
+                            avatar
+                        );
+
+
+                        div.appendChild(
+                            dot
+                        );
+
+
+                        div.appendChild(
+                            name
+                        );
+
+
+                        userList.appendChild(
+                            div
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+
+        // =================================
+        // MESSAGES
+        // =================================
+
+        sendButton.addEventListener(
+            "click",
+            () => {
+
+                const message =
+                    messageInput.value.trim();
+
+
+                if (!message) {
+                    return;
+                }
+
+
+                if (!socket.connected) {
+
+                    alert(
+                        "You are currently disconnected."
+                    );
+
+                    return;
+
+                }
+
+
+                socket.emit(
+                    "message",
+                    {
+
+                        documentId:
+                            documentId,
+
+                        message:
+                            `${username}: ${message}`
+
+                    }
+                );
+
+
+                messageInput.value =
+                    "";
+
+            }
+        );
+
+
+        socket.on(
+            "message",
+            (message) => {
+
+                const li =
+                    document.createElement(
+                        "li"
+                    );
+
+
+                li.textContent =
+                    message;
+
+
+                messages.appendChild(
+                    li
+                );
+
+            }
+        );
+
+
+        // =================================
+        // USER COLORS
+        // =================================
+
+        function getUserColor(id) {
+
+            const colors = [
+
+                "#2563eb",
+                "#dc2626",
+                "#16a34a",
+                "#9333ea",
+                "#ea580c",
+                "#0891b2",
+                "#db2777",
+                "#65a30d"
+
+            ];
+
+
+            let hash = 0;
+
+
+            for (
+                let i = 0;
+                i < id.length;
+                i++
+            ) {
+
+                hash =
+                    id.charCodeAt(i) +
+                    ((hash << 5) - hash);
+
+            }
+
+
+            return colors[
+                Math.abs(hash) %
+                colors.length
+            ];
+
+        }
+
+
+        // =================================
+        // ESCAPE HTML
+        // =================================
+
+        function escapeHtml(value) {
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+
+            div.textContent =
+                value;
+
+
+            return div.innerHTML;
+
+        }
+
+
+        // =================================
+        // INITIAL RENDER
+        // =================================
+
+        renderAllBlocks();
+
+    </script>
+
+</body>
+
+</html>
