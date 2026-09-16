@@ -40,6 +40,50 @@ const Editor = () => {
     }));
   };
 
+  const handleBlockTypeChange = (blockId, newType) => {
+    setDocument((prevDocument) => ({
+      ...prevDocument,
+      blocks: prevDocument.blocks.map((block) => {
+        if (block.id === blockId) {
+          return {
+            ...block,
+            type: newType,
+          };
+        }
+        return block;
+      }),
+    }));
+  };
+  const handleMoveBlock = (blockId, direction) => {
+    setDocument((prevDocument) => {
+      const blocks = [...prevDocument.blocks];
+
+      const currentIndex = blocks.findIndex((block) => block.id === blockId);
+
+      let newIndex;
+
+      if (direction === "up") {
+        newIndex = currentIndex - 1;
+      } else {
+        newIndex = currentIndex + 1;
+      }
+
+      if (newIndex < 0 || newIndex >= blocks.length) {
+        return prevDocument;
+      }
+
+      [blocks[currentIndex], blocks[newIndex]] = [
+        blocks[newIndex],
+        blocks[currentIndex],
+      ];
+
+      return {
+        ...prevDocument,
+        blocks,
+      };
+    });
+  };
+
   const handleAddBlock = () => {
     const newBlock = {
       id: crypto.randomUUID(),
@@ -69,6 +113,8 @@ const Editor = () => {
             block={block}
             onChange={handleBlockChange}
             onDelete={handleDelBlock}
+            onTypeChange={handleBlockTypeChange}
+            onMove={handleMoveBlock}
           />
         </div>
       ))}

@@ -1,4 +1,4 @@
-const Block = ({ block, onChange, onDelete }) => {
+const Block = ({ block, onChange, onDelete, onTypeChange, onMove }) => {
   const handleChange = (e) => {
     onChange(block.id, e.target.value);
   };
@@ -32,6 +32,17 @@ const Block = ({ block, onChange, onDelete }) => {
         )}
       </div>
 
+      <select
+        value={block.type}
+        onChange={(e) => onTypeChange(block.id, e.target.value)}
+      >
+        <option value="heading">Heading</option>
+        <option value="paragraph">Paragraph</option>
+        <option value="code">Code</option>
+      </select>
+      <button onClick={() => onMove(block.id, "up")}>↑</button>
+
+      <button onClick={() => onMove(block.id, "down")}>↓</button>
       <button className="delete-btn" onClick={() => onDelete(block.id)}>
         Delete
       </button>
