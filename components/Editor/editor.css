@@ -28,13 +28,62 @@ body {
 }
 
 .block {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
+  position: relative;
+  padding-top: 40px;
 }
 
+/* Block controls */
+
+.block-control {
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  opacity: 0;
+  transition: opacity 0.15s ease;
+
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 4px;
+}
+
+.block:hover .block-control {
+  opacity: 1;
+}
+
+/* Block buttons */
+
+.btn-control {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 5px 8px;
+  border-radius: 5px;
+}
+
+.btn-control:hover {
+  background: #f3f4f6;
+}
+
+/* Block type selector */
+
+.block-control select {
+  border: none;
+  background: transparent;
+  padding: 5px 6px;
+  cursor: pointer;
+  outline: none;
+}
+
+/* Block content */
+
 .block-content {
-  flex: 1;
+  width: 100%;
 }
 
 /* Heading */
@@ -60,6 +109,7 @@ body {
   border-radius: 8px;
 
   background: white;
+
   padding: 12px;
 
   font-size: 16px;
@@ -79,6 +129,7 @@ body {
   border-radius: 8px;
 
   background: #f1f1f1;
+
   padding: 14px;
 
   font-family: monospace;
@@ -100,10 +151,11 @@ body {
 .delete-btn {
   border: none;
   background: transparent;
+
   color: #6b7280;
 
-  padding: 8px 10px;
-  border-radius: 6px;
+  padding: 5px 8px;
+  border-radius: 5px;
 
   cursor: pointer;
 }
@@ -125,8 +177,8 @@ body {
   border-radius: 8px;
 
   color: #6b7280;
-  cursor: pointer;
 
+  cursor: pointer;
   font-size: 14px;
 }
 

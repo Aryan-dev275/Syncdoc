@@ -25,6 +25,7 @@ const Editor = () => {
       },
     ],
   });
+
   const handleBlockChange = (blockId, newContent) => {
     setDocument((prevDocument) => ({
       ...prevDocument,
@@ -54,6 +55,7 @@ const Editor = () => {
       }),
     }));
   };
+  
   const handleMoveBlock = (blockId, direction) => {
     setDocument((prevDocument) => {
       const blocks = [...prevDocument.blocks];
