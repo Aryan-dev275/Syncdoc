@@ -1,0 +1,31 @@
+/**
+ * Adds common HTTP security headers.
+ *
+ * This middleware can be used by the backend
+ * when the API server is connected.
+ */
+function securityHeaders(req, res, next) {
+    res.setHeader(
+        "X-Content-Type-Options",
+        "nosniff"
+    );
+
+    res.setHeader(
+        "X-Frame-Options",
+        "DENY"
+    );
+
+    res.setHeader(
+        "Referrer-Policy",
+        "strict-origin-when-cross-origin"
+    );
+
+    res.setHeader(
+        "Permissions-Policy",
+        "camera=(), microphone=(), geolocation=()"
+    );
+
+    next();
+}
+
+module.exports = securityHeaders;
