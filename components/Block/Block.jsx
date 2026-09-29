@@ -31,7 +31,7 @@ const Block = ({ block, onChange, onDelete, onTypeChange, onMove }) => {
           />
         )}
       </div>
-      <div className="block-control">
+      <div className="block-controls">
         <select
           value={block.type}
           onChange={(e) => onTypeChange(block.id, e.target.value)}

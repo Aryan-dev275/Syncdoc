@@ -1,90 +1,172 @@
 import { useState } from "react";
 import Block from "../Block/Block";
 import "../Editor/editor.css";
+import Topbar from "../Topbar/Topbar";
+import Sidebar from "../Sidebar/Sidebar";
 
 const Editor = () => {
-  const [document, setDocument] = useState({
-    id: "doc-1",
-    title: "SyncDoc",
-    blocks: [
-      {
-        id: "block-1",
-        type: "heading",
-        content: "My Technical Specification",
-      },
-      {
-        id: "block-2",
-        type: "paragraph",
-        content: "This is my document.",
-      },
-      {
-        id: "block-3",
-        type: "code",
-        language: "javascript",
-        content: 'const hello = "world";',
-      },
-    ],
-  });
+  const [saveStatus, setSaveStatus] = useState("Saved");
+
+  const [documents, setDocuments] = useState([
+    {
+      id: "doc-1",
+      title: "Technical Specification",
+      blocks: [
+        {
+          id: "block-1",
+          type: "heading",
+          content: "My Technical Specification",
+        },
+        {
+          id: "block-2",
+          type: "paragraph",
+          content: "This is my document.",
+        },
+        {
+          id: "block-3",
+          type: "code",
+          language: "javascript",
+          content: 'const hello = "world";',
+        },
+      ],
+    },
+
+    {
+      id: "doc-2",
+      title: "Meeting Notes",
+      blocks: [
+        {
+          id: "block-4",
+          type: "heading",
+          content: "Team Meeting",
+        },
+        {
+          id: "block-5",
+          type: "paragraph",
+          content: "Discuss the project requirements.",
+        },
+      ],
+    },
+
+    {
+      id: "doc-3",
+      title: "Project Research",
+      blocks: [
+        {
+          id: "block-6",
+          type: "heading",
+          content: "Research",
+        },
+        {
+          id: "block-7",
+          type: "paragraph",
+          content: "Research notes go here.",
+        },
+      ],
+    },
+  ]);
+
+  const [activeDocumentId, setActiveDocumentId] = useState("doc-1");
+
+  const documentData = documents.find((doc) => doc.id === activeDocumentId);
+
+  // EDIT BLOCK
 
   const handleBlockChange = (blockId, newContent) => {
-    setDocument((prevDocument) => ({
-      ...prevDocument,
-      blocks: prevDocument.blocks.map((block) => {
-        if (block.id === blockId) {
-          return {
-            ...block,
-            content: newContent,
-          };
+    setDocuments((prevDocuments) =>
+      prevDocuments.map((doc) => {
+        if (doc.id !== activeDocumentId) {
+          return doc;
         }
-        return block;
+
+        return {
+          ...doc,
+
+          blocks: doc.blocks.map((block) => {
+            if (block.id === blockId) {
+              return {
+                ...block,
+                content: newContent,
+              };
+            }
+
+            return block;
+          }),
+        };
       }),
-    }));
+    );
   };
+
+  // CHANGE BLOCK TYPE
 
   const handleBlockTypeChange = (blockId, newType) => {
-    setDocument((prevDocument) => ({
-      ...prevDocument,
-      blocks: prevDocument.blocks.map((block) => {
-        if (block.id === blockId) {
-          return {
-            ...block,
-            type: newType,
-          };
+    setDocuments((prevDocuments) =>
+      prevDocuments.map((doc) => {
+        if (doc.id !== activeDocumentId) {
+          return doc;
         }
-        return block;
+
+        return {
+          ...doc,
+
+          blocks: doc.blocks.map((block) => {
+            if (block.id === blockId) {
+              return {
+                ...block,
+                type: newType,
+              };
+            }
+
+            return block;
+          }),
+        };
       }),
-    }));
+    );
   };
-  
+
+  // MOVE BLOCK
+
   const handleMoveBlock = (blockId, direction) => {
-    setDocument((prevDocument) => {
-      const blocks = [...prevDocument.blocks];
+    setDocuments((prevDocuments) =>
+      prevDocuments.map((doc) => {
+        if (doc.id !== activeDocumentId) {
+          return doc;
+        }
 
-      const currentIndex = blocks.findIndex((block) => block.id === blockId);
+        const blocks = [...doc.blocks];
 
-      let newIndex;
+        const currentIndex = blocks.findIndex((block) => block.id === blockId);
 
-      if (direction === "up") {
-        newIndex = currentIndex - 1;
-      } else {
-        newIndex = currentIndex + 1;
-      }
+        if (currentIndex === -1) {
+          return doc;
+        }
 
-      if (newIndex < 0 || newIndex >= blocks.length) {
-        return prevDocument;
-      }
+        let newIndex;
 
-      [blocks[currentIndex], blocks[newIndex]] = [
-        blocks[newIndex],
-        blocks[currentIndex],
-      ];
+        if (direction === "up") {
+          newIndex = currentIndex - 1;
+        } else {
+          newIndex = currentIndex + 1;
+        }
 
-      return {
-        ...prevDocument,
-        blocks,
-      };
-    });
+        if (newIndex < 0 || newIndex >= blocks.length) {
+          return doc;
+        }
+
+        [blocks[currentIndex], blocks[newIndex]] = [
+          blocks[newIndex],
+          blocks[currentIndex],
+        ];
+
+        return {
+          ...doc,
+          blocks,
+        };
+      }),
+    );
   };
+
+  // ADD BLOCK
 
   const handleAddBlock = () => {
     const newBlock = {
@@ -92,38 +174,71 @@ const Editor = () => {
       type: "paragraph",
       content: "",
     };
-    setDocument((prevDocument) => ({
-      ...prevDocument,
-      blocks: [...prevDocument.blocks, newBlock],
-    }));
+
+    setDocuments((prevDocuments) =>
+      prevDocuments.map((doc) => {
+        if (doc.id !== activeDocumentId) {
+          return doc;
+        }
+
+        return {
+          ...doc,
+
+          blocks: [...doc.blocks, newBlock],
+        };
+      }),
+    );
   };
 
+  // DELETE BLOCK
+
   const handleDelBlock = (blockId) => {
-    setDocument((prevDocument) => ({
-      ...prevDocument,
-      blocks: prevDocument.blocks.filter((block) => block.id !== blockId),
-    }));
+    setDocuments((prevDocuments) =>
+      prevDocuments.map((doc) => {
+        if (doc.id !== activeDocumentId) {
+          return doc;
+        }
+
+        return {
+          ...doc,
+
+          blocks: doc.blocks.filter((block) => block.id !== blockId),
+        };
+      }),
+    );
   };
 
   return (
-    <div className="editor">
-      <h1>{document.title}</h1>
+    <div className="app-layout">
+      <Topbar status={saveStatus} />
 
-      {document.blocks.map((block) => (
-        <div className="block-wrapper" key={block.id}>
-          <Block
-            block={block}
-            onChange={handleBlockChange}
-            onDelete={handleDelBlock}
-            onTypeChange={handleBlockTypeChange}
-            onMove={handleMoveBlock}
-          />
-        </div>
-      ))}
+      <div className="main-layout">
+        <Sidebar
+          documents={documents}
+          activeDocumentId={activeDocumentId}
+          onSelectDocument={setActiveDocumentId}
+        />
 
-      <button className="add-block-btn" onClick={handleAddBlock}>
-        + Add new block
-      </button>
+        <main className="editor">
+          <h1>{documentData.title}</h1>
+
+          {documentData.blocks.map((block) => (
+            <div className="block-wrapper" key={block.id}>
+              <Block
+                block={block}
+                onChange={handleBlockChange}
+                onDelete={handleDelBlock}
+                onTypeChange={handleBlockTypeChange}
+                onMove={handleMoveBlock}
+              />
+            </div>
+          ))}
+
+          <button className="add-block-btn" onClick={handleAddBlock}>
+            + Add new block
+          </button>
+        </main>
+      </div>
     </div>
   );
 };

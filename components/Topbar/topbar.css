@@ -1,0 +1,19 @@
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 14px 0;
+  margin-bottom: 10px;
+
+  border-bottom: 1px solid #e5e7eb;
+}
+.app-name {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+}
+.save-status {
+  font-size: 14px;
+  color: #16a34a;
+}

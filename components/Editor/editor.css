@@ -1,189 +1,613 @@
+/* =========================================
+   GLOBAL
+========================================= */
+
 * {
   box-sizing: border-box;
 }
 
 body {
   margin: 0;
+
   background: #f7f7f8;
+
   font-family: Arial, sans-serif;
+
   color: #111827;
 }
 
-.editor {
-  width: 800px;
-  max-width: 90%;
-  margin: 60px auto;
+/* =========================================
+   APP LAYOUT
+========================================= */
+
+.app-layout {
+  min-height: 100vh;
 }
 
-.editor h1 {
-  font-size: 32px;
-  margin-bottom: 40px;
+/* =========================================
+   TOPBAR
+========================================= */
+
+.topbar {
+  height: 60px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  padding: 0 28px;
+
+  background: white;
+
+  border-bottom: 1px solid #e5e7eb;
+
+  position: sticky;
+
+  top: 0;
+
+  z-index: 100;
+}
+
+.app-name {
+  margin: 0;
+
+  font-size: 20px;
+
+  font-weight: 700;
+
   color: #111827;
 }
 
-/* Each block */
+.save-status {
+  font-size: 13px;
 
-.block-wrapper {
+  color: #16a34a;
+
+  font-weight: 500;
+}
+
+/* =========================================
+   MAIN LAYOUT
+========================================= */
+
+.main-layout {
+  display: flex;
+
+  width: 100%;
+
+  min-height: calc(100vh - 60px);
+}
+
+/* =========================================
+   SIDEBAR
+========================================= */
+
+.sidebar {
+  width: 250px;
+
+  flex-shrink: 0;
+
+  min-height: calc(100vh - 60px);
+
+  padding: 28px 16px;
+
+  background: #fafafa;
+
+  border-right: 1px solid #e5e7eb;
+}
+
+/* =========================================
+   SIDEBAR HEADER
+========================================= */
+
+.sidebar-header {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  padding: 0 8px;
+
   margin-bottom: 18px;
 }
 
-.block {
-  position: relative;
-  padding-top: 40px;
+.sidebar-header h3 {
+  margin: 0;
+
+  font-size: 12px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.06em;
+
+  text-transform: uppercase;
+
+  color: #6b7280;
 }
 
-/* Block controls */
+/* =========================================
+   NEW DOCUMENT BUTTON
+========================================= */
 
-.block-control {
+.new-document-btn {
+  border: none;
+
+  background: transparent;
+
+  color: #6b7280;
+
+  cursor: pointer;
+
+  padding: 5px 7px;
+
+  border-radius: 6px;
+
+  font-size: 13px;
+
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.new-document-btn:hover {
+  background: #e5e7eb;
+
+  color: #111827;
+}
+
+/* =========================================
+   DOCUMENT LIST
+========================================= */
+
+.document-list {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 3px;
+}
+
+/* =========================================
+   DOCUMENT ITEM
+========================================= */
+
+.document-item {
+  width: 100%;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 9px;
+
+  border: none;
+
+  background: transparent;
+
+  padding: 10px 11px;
+
+  border-radius: 8px;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  color: #374151;
+
+  font-size: 14px;
+
+  line-height: 1.35;
+
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.document-item:hover {
+  background: #f0f1f3;
+
+  color: #111827;
+}
+
+/* =========================================
+   ACTIVE DOCUMENT
+========================================= */
+
+.document-item.active {
+  background: #e4e6ea;
+
+  color: #111827;
+
+  font-weight: 600;
+}
+
+/* =========================================
+   EDITOR
+========================================= */
+
+.editor {
+  flex: 1;
+
+  width: 100%;
+
+  max-width: 900px;
+
+  margin: 0 auto;
+
+  padding: 48px 50px 80px;
+}
+
+/* =========================================
+   DOCUMENT TITLE
+========================================= */
+
+.editor h1 {
+  margin: 0 0 38px;
+
+  font-size: 34px;
+
+  line-height: 1.2;
+
+  font-weight: 700;
+
+  color: #111827;
+
+  letter-spacing: -0.02em;
+}
+
+/* =========================================
+   BLOCK WRAPPER
+========================================= */
+
+.block-wrapper {
+  margin-bottom: 14px;
+}
+
+/* =========================================
+   BLOCK
+========================================= */
+
+.block {
+  position: relative;
+
+  padding-top: 34px;
+}
+
+/* =========================================
+   BLOCK CONTROLS
+   Hidden until block is hovered
+========================================= */
+
+.block-controls {
   position: absolute;
+
   top: 0;
+
   left: 0;
 
   display: flex;
+
   align-items: center;
-  gap: 6px;
+
+  gap: 4px;
 
   opacity: 0;
+
   transition: opacity 0.15s ease;
 
   background: white;
+
   border: 1px solid #e5e7eb;
+
   border-radius: 8px;
+
   padding: 4px;
+
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+
+  z-index: 10;
 }
 
-.block:hover .block-control {
+/* Show controls when hovering over block */
+
+.block:hover .block-controls {
   opacity: 1;
 }
 
-/* Block buttons */
+/* =========================================
+   CONTROL BUTTONS
+========================================= */
 
-.btn-control {
+.control-btn {
   border: none;
+
   background: transparent;
+
   cursor: pointer;
+
   padding: 5px 8px;
+
   border-radius: 5px;
+
+  color: #6b7280;
+
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
 }
 
-.btn-control:hover {
+.control-btn:hover {
   background: #f3f4f6;
+
+  color: #111827;
 }
 
-/* Block type selector */
+/* =========================================
+   BLOCK TYPE SELECTOR
+========================================= */
 
-.block-control select {
+.block-controls select {
   border: none;
+
   background: transparent;
+
   padding: 5px 6px;
+
   cursor: pointer;
+
   outline: none;
+
+  color: #374151;
+
+  font-size: 13px;
 }
 
-/* Block content */
+/* =========================================
+   BLOCK CONTENT
+========================================= */
 
 .block-content {
   width: 100%;
 }
 
-/* Heading */
+/* =========================================
+   HEADING BLOCK
+========================================= */
 
 .heading-input {
   width: 100%;
+
   border: none;
+
   outline: none;
+
   background: transparent;
-  font-size: 28px;
+
+  font-size: 27px;
+
+  line-height: 1.3;
+
   font-weight: 600;
-  padding: 8px 4px;
+
+  padding: 6px 4px;
+
+  color: #111827;
 }
 
-/* Paragraph */
+.heading-input::placeholder {
+  color: #9ca3af;
+}
+
+/* =========================================
+   PARAGRAPH BLOCK
+========================================= */
 
 .paragraph-input {
   width: 100%;
+
   min-height: 90px;
+
   resize: vertical;
 
   border: 1px solid #e5e7eb;
-  border-radius: 8px;
+
+  border-radius: 9px;
 
   background: white;
 
-  padding: 12px;
+  padding: 14px;
 
-  font-size: 16px;
+  font-family: Arial, sans-serif;
+
+  font-size: 15px;
+
   line-height: 1.6;
 
   outline: none;
+
+  color: #111827;
+
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
-/* Code */
+.paragraph-input:focus {
+  border-color: #9ca3af;
+
+  box-shadow: 0 0 0 3px rgba(156, 163, 175, 0.08);
+}
+
+.paragraph-input::placeholder {
+  color: #9ca3af;
+}
+
+/* =========================================
+   CODE BLOCK
+========================================= */
 
 .code-input {
   width: 100%;
+
   min-height: 120px;
+
   resize: vertical;
 
   border: 1px solid #e5e7eb;
-  border-radius: 8px;
+
+  border-radius: 9px;
 
   background: #f1f1f1;
 
   padding: 14px;
 
   font-family: monospace;
+
   font-size: 14px;
+
   line-height: 1.5;
 
   outline: none;
+
+  color: #111827;
+
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
-/* Focus effect */
-
-.paragraph-input:focus,
 .code-input:focus {
   border-color: #9ca3af;
+
+  box-shadow: 0 0 0 3px rgba(156, 163, 175, 0.08);
 }
 
-/* Delete button */
+/* =========================================
+   DELETE BUTTON
+========================================= */
 
 .delete-btn {
   border: none;
+
   background: transparent;
 
   color: #6b7280;
 
   padding: 5px 8px;
+
   border-radius: 5px;
 
   cursor: pointer;
+
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
 }
 
 .delete-btn:hover {
   background: #fee2e2;
+
   color: #dc2626;
 }
 
-/* Add block */
+/* =========================================
+   ADD BLOCK BUTTON
+========================================= */
 
 .add-block-btn {
-  margin-top: 10px;
+  margin-top: 8px;
 
   border: 1px dashed #d1d5db;
+
   background: transparent;
 
-  padding: 10px 16px;
+  padding: 9px 14px;
+
   border-radius: 8px;
 
   color: #6b7280;
 
   cursor: pointer;
+
   font-size: 14px;
+
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
 }
 
 .add-block-btn:hover {
   background: white;
+
   border-color: #9ca3af;
+
   color: #111827;
+}
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 900px) {
+  .sidebar {
+    width: 210px;
+  }
+
+  .editor {
+    padding: 40px 30px 70px;
+  }
+}
+
+@media (max-width: 700px) {
+  .main-layout {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+
+    min-height: auto;
+
+    padding: 16px;
+
+    border-right: none;
+
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .document-list {
+    flex-direction: row;
+
+    overflow-x: auto;
+
+    padding-bottom: 4px;
+  }
+
+  .document-item {
+    width: auto;
+
+    min-width: max-content;
+
+    white-space: nowrap;
+  }
+
+  .editor {
+    width: 100%;
+
+    max-width: 100%;
+
+    margin: 0;
+
+    padding: 30px 20px 60px;
+  }
+
+  .editor h1 {
+    font-size: 28px;
+
+    margin-bottom: 30px;
+  }
 }
