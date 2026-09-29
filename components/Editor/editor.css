@@ -8,11 +8,8 @@
 
 body {
   margin: 0;
-
   background: #f7f7f8;
-
   font-family: Arial, sans-serif;
-
   color: #111827;
 }
 
@@ -32,9 +29,7 @@ body {
   height: 60px;
 
   display: flex;
-
   align-items: center;
-
   justify-content: space-between;
 
   padding: 0 28px;
@@ -44,7 +39,6 @@ body {
   border-bottom: 1px solid #e5e7eb;
 
   position: sticky;
-
   top: 0;
 
   z-index: 100;
@@ -54,7 +48,6 @@ body {
   margin: 0;
 
   font-size: 20px;
-
   font-weight: 700;
 
   color: #111827;
@@ -207,7 +200,7 @@ body {
 }
 
 .document-item:hover {
-  background: #f0f1f3;
+  background: #e5e7eb;
 
   color: #111827;
 }
@@ -222,6 +215,66 @@ body {
   color: #111827;
 
   font-weight: 600;
+}
+
+/* =========================================
+   DELETE DOCUMENT BUTTON
+========================================= */
+
+.doc-del-btn {
+  position: absolute;
+
+  right: 5px;
+
+  width: 30px;
+
+  height: 30px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border: none;
+
+  border-radius: 6px;
+
+  background: transparent;
+
+  color: #9ca3af;
+
+  cursor: pointer;
+
+  font-size: 16px;
+
+  line-height: 1;
+
+  opacity: 0;
+
+  transition:
+    opacity 0.15s ease,
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+/* =========================================
+   SHOW DELETE BUTTON WHEN HOVERING DOCUMENT
+========================================= */
+
+.document-list > .doc-del-btn:hover,
+.document-list > .document-item:hover + .doc-del-btn {
+  opacity: 1;
+}
+
+/* =========================================
+   DELETE BUTTON HOVER
+========================================= */
+
+.doc-del-btn:hover {
+  background: #fee2e2;
+
+  color: #dc2626;
 }
 
 /* =========================================
@@ -311,7 +364,7 @@ body {
   z-index: 10;
 }
 
-/* Show controls when hovering over block */
+/* Show controls when hovering block */
 
 .block:hover .block-controls {
   opacity: 1;
@@ -486,7 +539,7 @@ body {
 }
 
 /* =========================================
-   DELETE BUTTON
+   DELETE BLOCK BUTTON
 ========================================= */
 
 .delete-btn {
@@ -610,4 +663,38 @@ body {
 
     margin-bottom: 30px;
   }
+}
+.document-item {
+  justify-content: space-between;
+  padding: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.document-select-btn {
+  flex: 1;
+
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+
+  border: none;
+  background: transparent;
+
+  padding: 10px 11px;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  color: inherit;
+
+  font-size: 14px;
+}
+
+.document-item:hover .doc-del-btn {
+  opacity: 1;
 }

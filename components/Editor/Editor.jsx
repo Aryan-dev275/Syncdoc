@@ -64,6 +64,22 @@ const Editor = () => {
         },
       ],
     },
+    {
+      id: "doc-4",
+      title: "Daily Diary",
+      blocks: [
+        {
+          id: "block-6",
+          type: "heading",
+          content: "My Diary",
+        },
+        {
+          id: "block-7",
+          type: "paragraph",
+          content: "Diary entry goes here",
+        },
+      ],
+    },
   ]);
 
   const [activeDocumentId, setActiveDocumentId] = useState("doc-1");
@@ -208,6 +224,48 @@ const Editor = () => {
     );
   };
 
+  //New doc addition
+
+  const handleNewDocument = () => {
+    const newDocument = {
+      id: crypto.randomUUID(),
+
+      title: "Untitled Document",
+
+      blocks: [
+        {
+          id: crypto.randomUUID(),
+          type: "heading",
+          content: "Untitled Document",
+        },
+        {
+          id: crypto.randomUUID(),
+          type: "paragraph",
+          content: "",
+        },
+      ],
+    };
+    setDocuments((prevDocuments) => [...prevDocuments, newDocument]);
+    setActiveDocumentId(newDocument.id);
+  };
+
+  const handleDelDocument = (documentId) => {
+    setDocuments((prevDocuments) => {
+      const remainingDocuments = prevDocuments.filter(
+        (doc) => doc.id !== documentId,
+      );
+
+      if (remainingDocuments.length === 0) {
+        return prevDocuments;
+      }
+
+      if (documentId === activeDocumentId) {
+        setActiveDocumentId(remainingDocuments[0].id);
+      }
+      return remainingDocuments;
+    });
+  };
+
   return (
     <div className="app-layout">
       <Topbar status={saveStatus} />
@@ -217,6 +275,8 @@ const Editor = () => {
           documents={documents}
           activeDocumentId={activeDocumentId}
           onSelectDocument={setActiveDocumentId}
+          onNewDocument={handleNewDocument}
+          onDeleteDocument={handleDelDocument}
         />
 
         <main className="editor">
