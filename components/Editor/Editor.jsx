@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Block from "../Block/Block";
 import "../Editor/editor.css";
@@ -6,6 +6,8 @@ import Topbar from "../Topbar/Topbar";
 import Sidebar from "../Sidebar/Sidebar";
 
 const Editor = () => {
+  const navigate = useNavigate();
+  const { documentId } = useParams();
   const [saveStatus, setSaveStatus] = useState("Saved");
 
   const [documents, setDocuments] = useState([
@@ -83,9 +85,20 @@ const Editor = () => {
     },
   ]);
 
-  const [activeDocumentId, setActiveDocumentId] = useState("doc-1");
+  const [activeDocumentId, setActiveDocumentId] = useState(
+    documentId || "doc-1",
+  );
+
+  useEffect(() => {
+    if (documentId) {
+      setActiveDocumentId(documentId);
+    }
+  }, [documentId]);
 
   const documentData = documents.find((doc) => doc.id === activeDocumentId);
+  if (!documentData) {
+    return <div>Document not found</div>;
+  }
 
   // EDIT BLOCK
 
@@ -248,6 +261,7 @@ const Editor = () => {
     };
     setDocuments((prevDocuments) => [...prevDocuments, newDocument]);
     setActiveDocumentId(newDocument.id);
+    navigate(`/document/${newDocument.id}`);
   };
 
   const handleDelDocument = (documentId) => {
@@ -267,6 +281,11 @@ const Editor = () => {
     });
   };
 
+  const handleSelectDocument = (documentId) => {
+    setActiveDocumentId(documentId);
+    navigate(`/document/${documentId}`);
+  };
+
   return (
     <div className="app-layout">
       <Topbar status={saveStatus} />
@@ -275,7 +294,7 @@ const Editor = () => {
         <Sidebar
           documents={documents}
           activeDocumentId={activeDocumentId}
-          onSelectDocument={setActiveDocumentId}
+          onSelectDocument={handleSelectDocument}
           onNewDocument={handleNewDocument}
           onDeleteDocument={handleDelDocument}
         />
