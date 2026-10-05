@@ -1,11 +1,16 @@
 import React from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Editor from "../components/Editor/Editor";
 
 const App = () => {
   return (
-    <div>
-      <Editor />
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Editor />} />
+
+        <Route path="/documents/:documentId" element={<Editor />} />
+      </Routes>
+    </BrowserRouter>
   );
 };
 
