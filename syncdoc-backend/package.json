@@ -1,0 +1,29 @@
+{
+  "name": "syncdoc-backend",
+  "version": "1.0.0",
+  "description": "SyncDoc backend: REST API, realtime Yjs collaboration, sanitized export",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "test": "node test/smoke.test.js && node test/stress.test.js && node test/mongo.test.js && node test/e2e-verification.test.js",
+    "test:smoke": "node test/smoke.test.js",
+    "test:stress": "node test/stress.test.js",
+    "test:mongo": "node test/mongo.test.js",
+    "test:e2e": "node test/e2e-verification.test.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dompurify": "^3.4.15",
+    "dotenv": "^18.0.5",
+    "express": "^5.2.1",
+    "jsdom": "^26.1.0",
+    "mongoose": "^9.10.4",
+    "pdf-lib": "^1.17.1",
+    "socket.io": "^4.8.3",
+    "yjs": "^13.6.32"
+  },
+  "devDependencies": {
+    "socket.io-client": "^4.8.3"
+  }
+}
